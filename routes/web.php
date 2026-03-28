@@ -1,13 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TareasController;
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('tareas', function () {
-    return view('tareas');
 });
 
 Route::resource('tareas', TareasController::class);

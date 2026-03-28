@@ -6,17 +6,19 @@ namespace App\Http\Controllers;
 use App\Models\Tarea;
 use App\Http\Requests\StoreTareaRequest;
 use App\Http\Requests\UpdateTareaRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\View;
+
 
 class TareasController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index($id)
+    public function index()
     {
-        $id = $consulta = DB::select("select tarea from tareas where id=:id", ['id'=>$id]);
-
-        return view('tareas.index', compact('tareas'));
+        $tareas = Tarea::paginate(10);
+        return view('tareas', compact('tareas'));
     }
 
     /**
@@ -28,7 +30,7 @@ class TareasController extends Controller
         $tarea = __('Crear Tarea');
         $action = route('tareas.store');
         $buttonText = __('Crear tarea');
-        return view('tareas.form', compact('tareas', 'action', 'buttonText'));
+        return view('form', compact('tareas', 'action', 'buttonText'));
     }
 
     /**
@@ -43,7 +45,7 @@ class TareasController extends Controller
             'tarea' => $request->string('tarea')
         ]);
 
-        return redirect()->route('tareas.index');
+        return redirect()->route('tareas');
     }
 
     /**
@@ -51,16 +53,20 @@ class TareasController extends Controller
      */
     public function show(Tarea $tarea)
     {
-        $tarea->load('user:id,tarea');
         return view('tareas.show', compact('tarea'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Tarea $tarea)
+    public function edit(Tarea $tarea): Renderable
     {
-        //
+        $titulo = __('Editar tarea');
+        $action = route('tareas.update', $tarea);
+        $buttonText = __('Actualizar tarea');
+        $method = 'PUT';
+
+        return view('tareas.form', compact('tarea', 'action', 'buttonText', 'method', 'titulo'));
     }
 
     /**
@@ -68,7 +74,14 @@ class TareasController extends Controller
      */
     public function update(UpdateTareaRequest $request, Tarea $tarea)
     {
-        //
+        $request->validate([
+            'tarea' => 'required|string|max:100|unique:tareas,tarea,' . $tarea->id,
+        ]);
+
+        $tarea->update([
+            'tarea' => $request->string('tarea'),
+        ]);
+        return redirect()->route('tareas');
     }
 
     /**
@@ -76,6 +89,7 @@ class TareasController extends Controller
      */
     public function destroy(Tarea $tarea)
     {
-        //
+        $tarea->delete();
+        return redirect()->route('tareas');
     }
 }
