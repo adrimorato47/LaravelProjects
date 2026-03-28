@@ -28,15 +28,22 @@ class TareasController extends Controller
         $tarea = __('Crear Tarea');
         $action = route('tareas.store');
         $buttonText = __('Crear tarea');
-        return view('tareas.form');
+        return view('tareas.form', compact('tareas', 'action', 'buttonText'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTareaRequest $request)
+    public function store(StoreTareaRequest $request) :RedirectResponse
     {
-        //
+        $request->validate([
+            'tarea' => 'required|string|max:1000'
+        ]);
+        Tarea::create([
+            'tarea' => $request->string('tarea')
+        ]);
+
+        return redirect()->route('tareas.index');
     }
 
     /**
@@ -44,7 +51,8 @@ class TareasController extends Controller
      */
     public function show(Tarea $tarea)
     {
-        //
+        $tarea->load('user:id,tarea');
+        return view('tareas.show', compact('tarea'));
     }
 
     /**
