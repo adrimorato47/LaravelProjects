@@ -6,7 +6,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('listaCompra', function () {
-    return view('listaCompra');
-})
-;
+Route::get('tareas', function () {
+    return view('tareas');
+});
+
+Route::resource('tareas', TareasController::class);
