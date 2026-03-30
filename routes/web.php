@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\TareaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TareasController;
+
+Route::resource('tareas', TareaController::class)
+    ->only(['index', 'store', 'update', 'destroy']);
+
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('tareas.index');
 });
-
-Route::resource('tareas', TareasController::class);
